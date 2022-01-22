@@ -19,7 +19,8 @@
 (global-visual-line-mode 1)
 
 ;; Theme.
-(load-theme 'dracula t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(load-theme 'dracula-pro t)
 
 ;; Show stray whitespace.
 (setq-default show-trailing-whitespace t)
@@ -64,15 +65,7 @@
 (require 'use-package)
 
 ;; Install packages.
-(dolist (package '(markdown-mode
-                   projectile
-                   helm
-                   company
-                   compile
-                   yasnippet
-                   lsp-mode
-                   go-projectile
-                   go-mode))
+(dolist (package '(go-projectile go-mode))
   (unless (package-installed-p package)
     (package-install package)))
 
@@ -81,7 +74,6 @@
 
 ;; Enable Paredit.
 (use-package paredit :ensure t)
-
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
 (add-hook 'ielm-mode-hook 'enable-paredit-mode)
@@ -90,13 +82,10 @@
 
 ;; Enable Rainbow Delimiters.
 (use-package rainbow-delimiters :ensure t)
-
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-interaction-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-
-;; Customize Rainbow Delimiters.
 (set-face-foreground 'rainbow-delimiters-depth-1-face "#80ffea") ; cyan
 (set-face-foreground 'rainbow-delimiters-depth-2-face "#8aff80") ; green
 (set-face-foreground 'rainbow-delimiters-depth-3-face "#ffca80") ; orange
@@ -108,22 +97,31 @@
 ;; Markdown Mode
 (use-package markdown-mode :ensure t)
 
-(use-package flycheck :ensure t :init (global-flycheck-mode 1))
-(setq flycheck-checker-error-threshold 1000)
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode 1)
+  :config (setq flycheck-checker-error-threshold 1000))
 
-(use-package magit :ensure t)
-(setq magit-fetch-modules-jobs 16)
+(use-package magit
+  :ensure t
+  :config (setq magit-fetch-modules-jobs 16))
 
-(use-package projectile :ensure t :init (projectile-mode "1.0"))
+(use-package projectile
+  :ensure t
+  :init (projectile-mode "1.0"))
 
-(use-package helm :ensure t :init (helm-mode 1))
+(use-package helm
+  :ensure t
+  :init (helm-mode 1))
 (require 'helm-config)
 (require 'helm-projectile)
 (helm-projectile-on)
 
 (use-package company :ensure t)
 (use-package compile :ensure t)
-(use-package yasnippet :ensure t :init (yas-global-mode 1))
+(use-package yasnippet
+  :ensure t
+  :init (yas-global-mode 1))
 
 (use-package lsp-mode :ensure t)
 (use-package company :ensure t)
@@ -182,42 +180,9 @@
 (setq gofmt-command "~/src/go/bin/crlfmt")
 (setq gofmt-args '("-tab" "2"))
 
-;; Bonus: escape analysis.
-(flycheck-define-checker go-build-escape
-  "A Go escape checker using `go build -gcflags -m'."
-  :command ("go" "build" "-gcflags" "-m"
-            (option-flag "-i" flycheck-go-build-install-deps)
-            ;; multiple tags are listed as "dev debug ..."
-            (option-list "-tags=" flycheck-go-build-tags concat)
-            "-o" null-device)
-  :error-patterns
-  (
-   (warning line-start (file-name) ":" line ":"
-          (optional column ":") " "
-          (message (one-or-more not-newline) "escapes to heap")
-          line-end)
-   (warning line-start (file-name) ":" line ":"
-          (optional column ":") " "
-          (message "moved to heap:" (one-or-more not-newline))
-          line-end)
-   (info line-start (file-name) ":" line ":"
-          (optional column ":") " "
-          (message "inlining call to " (one-or-more not-newline))
-          line-end)
-  )
-  :modes go-mode
-  :predicate (lambda ()
-               (and (flycheck-buffer-saved-p)
-                    (not (string-suffix-p "_test.go" (buffer-file-name)))))
-  :next-checkers ((warning . go-errcheck)
-                  (warning . go-unconvert)
-                  (warning . go-staticcheck)))
-
-(with-eval-after-load 'flycheck
-   (add-to-list 'flycheck-checkers 'go-build-escape)
-   (flycheck-add-next-checker 'go-gofmt 'go-build-escape))
-
 ;; Start server.
 (require 'server)
 (unless (server-running-p)
   (server-start))
+
+;;; .emacs.el ends here
