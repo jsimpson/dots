@@ -44,12 +44,15 @@ Now you can install MELPA packages and configure them easily:
 
 It supports many more options for configuration, including commands and key binds, etc. See the [documentation here](https://github.com/jwiegley/use-package) for more.
 
-## Evil
+## Packages
+
+### Evil
 
 Evil is the extensible vi layer for Emacs. It is a vim emulator.
 
 ```el
 ;; Enable Evil
 (use-package evil
-  :init (evil-mode 1))
+  :init
+  :config (evil-mode 1))
 ```

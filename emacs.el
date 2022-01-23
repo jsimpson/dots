@@ -1,11 +1,11 @@
-;;; .emacs
+;;; .Emacs
 
 ;; who-am-i?
 ; used by git, mail, etc.
 (setq user-mail-address "jsimpson.github@gmail.com")
 (setq user-full-name "Jonathan Simpson")
 
-;; Spell check - install "aspell" and aspell dictionaries.
+;; spell check - install "aspell" and aspell dictionaries.
 (setq ispell-program-name "aspell")
 (setq ispell-extra-args '("--sug-mode=ultra"))
 
@@ -14,65 +14,111 @@
 (when (display-graphic-p)
   (tool-bar-mode 0)
   (scroll-bar-mode 0))
-(setq inhibit-startup-screen t)
+;;(setq inhibit-startup-screen t)
 (column-number-mode 't)
 (global-visual-line-mode 1)
+(global-display-line-numbers-mode)
+(setq display-line-numbers-type 'relative)
 
-;; Theme.
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; load custom dracula pro theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'dracula-pro t)
 
-;; Show stray whitespace.
+;; interactive mode everywhere
+(ido-mode 1)
+(ido-everywhere)
+(setq ido-enable-flex-matching t)
+(fido-mode)
+
+;; show stray whitespace
 (setq-default show-trailing-whitespace t)
 (setq-default indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'left)
 
-;; Consider a period followed by a single space to be end of sentence.
+;; consider a period followed by a single space the end of sentence
 (setq sentence-end-double-space nil)
 
-;; Use spaces, not tabs, for indentation.
+;; sse spaces, not tabs, for indentation
 (setq-default indent-tabs-mode nil)
 
-;; Display the distance between two tab stops as 4 characters wide.
+;; display the distance between two tab stops as 4 characters wide
 (setq-default tab-width 4)
 
-;; Highlight matching pairs of parentheses.
+;; highlight matching pairs of parentheses
 (setq show-paren-delay 0)
-(show-paren-mode 1)
+(show-paren-mode)
 
-;; Write auto-saves and backups to separate directory.
+;; write auto-saves and backups to separate directory
 (make-directory "~/.emacs.d/backup/" t)
 (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/backup/" t)))
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup/margo/")))
 
-;; Disable lockfiles.
+;; do not move the current file while creating backup
+(setq backup-by-copying t)
+
+;; disable lockfiles
 (setq create-lockfiles nil)
 
-;; Write customizations to ~/.emacs.d/custom.el instead of this file.
-(setq custom-file "~/.emacs.d/custom.el")
-
-;; Set up package.el to work with MELPA
+;; load package manager, add the MELP package repository
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
 
+;; bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-
 (require 'use-package)
 
-;; Install packages.
-(dolist (package '(go-projectile go-mode))
-  (unless (package-installed-p package)
-    (package-install package)))
+(use-package general
+  :ensure t
+  :config
+  (general-define-key
+   "C-s" 'swiper
+   "M-x" 'counsel-M-x)
+  (general-define-key
+   :prefix "C-c"
+   "b" 'ivy-switch-buffer
+   "/" 'counsel-git-grep
+   "f" '(:ignore t :which-key "files")
+   "ff" 'counsel-find-file
+   "fr" 'counsel-recentf
+   "fr" 'counsel-recentf
+   "p" '(:ignore t :which-key "project")
+   "pf" '(counsel-git :which-key "find file in git dir")))
 
-;; Enable Evil
-(use-package evil :ensure t :init (evil-mode 1))
+(use-package which-key
+  :ensure t
+  :init (which-key-mode))
 
-;; Enable Paredit.
+(use-package slime
+  :ensure t
+  :init
+  (setq inferior-lisp-program "sbcl"))
+
+(use-package ivy
+  :ensure t
+  :init (ivy-mode))
+(use-package swiper :ensure t)
+(use-package counsel :ensure t)
+
+;; load evil
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-search-module 'evil-search)
+  (setq evil-ex-complete-emacs-commands nil)
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below t)
+  (setq evil-shift-round nil)
+  (setq evil-want-C-u-scroll t)
+  :config (evil-mode))
+
+;; load paredit
 (use-package paredit :ensure t)
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
@@ -80,7 +126,7 @@
 (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 
-;; Enable Rainbow Delimiters.
+;; load rainbow delimiters
 (use-package rainbow-delimiters :ensure t)
 (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
@@ -94,93 +140,26 @@
 (set-face-foreground 'rainbow-delimiters-depth-6-face "#ff9580") ; red
 (set-face-foreground 'rainbow-delimiters-depth-7-face "#ffff80") ; yellow
 
-;; Markdown Mode
-(use-package markdown-mode :ensure t)
-
-(use-package flycheck
+;; load markdown mode
+(use-package markdown-mode
   :ensure t
-  :init (global-flycheck-mode 1)
-  :config (setq flycheck-checker-error-threshold 1000))
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 
+;; load magit
 (use-package magit
   :ensure t
-  :config (setq magit-fetch-modules-jobs 16))
+  :init (setq magit-fetch-modules-jobs 16))
 
-(use-package projectile
+;; load flycheck
+(use-package flycheck
   :ensure t
-  :init (projectile-mode "1.0"))
+  :init (global-flycheck-mode))
 
-(use-package helm
-  :ensure t
-  :init (helm-mode 1))
-(require 'helm-config)
-(require 'helm-projectile)
-(helm-projectile-on)
-
-(use-package company :ensure t)
-(use-package compile :ensure t)
-(use-package yasnippet
-  :ensure t
-  :init (yas-global-mode 1))
-
-(use-package lsp-mode :ensure t)
-(use-package company :ensure t)
-(setq lsp-completion-provider 'capf)
-
-;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(require 'go-projectile)
-(go-projectile-tools-add-path)
-(setq go-projectile-tools
-  '((gocode    . "github.com/mdempsky/gocode")
-    (golint    . "golang.org/x/lint/golint")
-    (godef     . "github.com/rogpeppe/godef")
-    (errcheck  . "github.com/kisielk/errcheck")
-    (godoc     . "golang.org/x/tools/cmd/godoc")
-    (gogetdoc  . "github.com/zmb3/gogetdoc")
-    (goimports . "golang.org/x/tools/cmd/goimports")
-    (gorename  . "golang.org/x/tools/cmd/gorename")
-    (gomvpkg   . "golang.org/x/tools/cmd/gomvpkg")
-    (guru      . "golang.org/x/tools/cmd/guru")))
-
-;;(require 'company-go) ; obsolete with company-lsp
-(require 'go-mode)
-(add-hook 'go-mode-hook #'lsp)
-(add-hook 'go-mode-hook (lambda ()
-  (company-mode) ; enable company upon activating go
-
-  ;; Code layout.
-  (setq tab-width 2 indent-tabs-mode 1) ; std go whitespace configuration
-  (add-hook 'before-save-hook 'gofmt-before-save) ; run gofmt on each save
-
-  ;; Shortcuts for common go-test invocations.
-  (let ((map go-mode-map))
-    (define-key map (kbd "C-c a") 'go-test-current-project) ;; current package, really
-    (define-key map (kbd "C-c m") 'go-test-current-file)
-    (define-key map (kbd "C-c .") 'go-test-current-test))
-
-  ;; Fix parsing of error and warning lines in compiler output.
-  (setq compilation-error-regexp-alist-alist ; first remove the standard conf; it's not good.
-        (remove 'go-panic
-                (remove 'go-test compilation-error-regexp-alist-alist)))
-
-  ;; Make another one that works better and strips more space at the beginning.
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(go-test . ("^[[:space:]]*\\([_a-zA-Z./][_a-zA-Z0-9./]*\\):\\([0-9]+\\):.*$" 1 2)))
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               '(go-panic . ("^[[:space:]]*\\([_a-zA-Z./][_a-zA-Z0-9./]*\\):\\([0-9]+\\)[[:space:]].*$" 1 2)))
-
-  ;; override.
-  (add-to-list 'compilation-error-regexp-alist 'go-test t)
-  (add-to-list 'compilation-error-regexp-alist 'go-panic t)))
-
-;; CockroachDB-style Go formatter from github.com/cockroachdb/crlfmt.
-;; This is also symlinked as ~/.emacs.d/gotools/bin/goimports.
-(setq gofmt-command "~/src/go/bin/crlfmt")
-(setq gofmt-args '("-tab" "2"))
-
-;; Start server.
+;; start server
 (require 'server)
 (unless (server-running-p)
   (server-start))
