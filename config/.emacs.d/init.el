@@ -30,10 +30,10 @@
 (load-theme 'dracula-pro t)
 
 ;; interactive mode everywhere
-(ido-mode 1)
-(ido-everywhere)
-(setq ido-enable-flex-matching t)
-(fido-mode)
+;(ido-mode 1)
+;(ido-everywhere)
+;(setq ido-enable-flex-matching t)
+;(fido-mode)
 
 ;; show stray whitespace
 (setq-default show-trailing-whitespace t)
@@ -76,9 +76,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+(setq use-package-always-ensure t)
 
 (use-package general
-  :ensure t
   :config
   (general-define-key
    "C-s" 'swiper
@@ -95,23 +95,28 @@
    "pf" '(counsel-git :which-key "find file in git dir")))
 
 (use-package which-key
-  :ensure t
-  :init (which-key-mode))
+  :init
+  (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
 
 (use-package slime
-  :ensure t
   :init
   (setq inferior-lisp-program "sbcl"))
 
 (use-package ivy
-  :ensure t
   :init (ivy-mode))
-(use-package swiper :ensure t)
-(use-package counsel :ensure t)
+(use-package swiper)
+(use-package counsel
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-variable] . counsel-describe-variable))
+(use-package ivy-rich
+  :init (ivy-rich-mode 1))
 
 ;; load evil
 (use-package evil
-  :ensure t
   :init
   (setq evil-search-module 'evil-search)
   (setq evil-ex-complete-emacs-commands nil)
@@ -119,10 +124,11 @@
   (setq evil-split-window-below t)
   (setq evil-shift-round nil)
   (setq evil-want-C-u-scroll t)
-  :config (evil-mode))
+  :config
+  (evil-mode))
 
 ;; load paredit
-(use-package paredit :ensure t)
+(use-package paredit)
 (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'eval-expression-minibuffer-setup-hook 'enable-paredit-mode)
 (add-hook 'ielm-mode-hook 'enable-paredit-mode)
@@ -130,22 +136,20 @@
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 
 ;; load rainbow delimiters
-(use-package rainbow-delimiters :ensure t)
-(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'lisp-interaction-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-(set-face-foreground 'rainbow-delimiters-depth-1-face "#80ffea") ; cyan
-(set-face-foreground 'rainbow-delimiters-depth-2-face "#8aff80") ; green
-(set-face-foreground 'rainbow-delimiters-depth-3-face "#ffca80") ; orange
-(set-face-foreground 'rainbow-delimiters-depth-4-face "#ff80bf") ; pink
-(set-face-foreground 'rainbow-delimiters-depth-5-face "#9580ff") ; purple
-(set-face-foreground 'rainbow-delimiters-depth-6-face "#ff9580") ; red
-(set-face-foreground 'rainbow-delimiters-depth-7-face "#ffff80") ; yellow
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode)
+  :config
+  (set-face-foreground 'rainbow-delimiters-depth-1-face "#80ffea") ; cyan
+  (set-face-foreground 'rainbow-delimiters-depth-2-face "#8aff80") ; green
+  (set-face-foreground 'rainbow-delimiters-depth-3-face "#ffca80") ; orange
+  (set-face-foreground 'rainbow-delimiters-depth-4-face "#ff80bf") ; pink
+  (set-face-foreground 'rainbow-delimiters-depth-5-face "#9580ff") ; purple
+  (set-face-foreground 'rainbow-delimiters-depth-6-face "#ff9580") ; red
+  (set-face-foreground 'rainbow-delimiters-depth-7-face "#ffff80")) ; yellow)
 
 ;; load markdown mode
 (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -154,13 +158,20 @@
 
 ;; load magit
 (use-package magit
-  :ensure t
   :init (setq magit-fetch-modules-jobs 16))
 
 ;; load flycheck
 (use-package flycheck
-  :ensure t
   :init (global-flycheck-mode))
+
+;; load helpful
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-command] . helpful-command)
+  ([remap describe-key] . helpful-key))
 
 ;; start server
 (require 'server)
