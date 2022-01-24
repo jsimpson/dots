@@ -14,11 +14,14 @@
 (when (display-graphic-p)
   (tool-bar-mode 0)
   (scroll-bar-mode 0))
-;;(setq inhibit-startup-screen t)
+;(setq inhibit-startup-screen t)
 (column-number-mode 't)
 (global-visual-line-mode 1)
-(global-display-line-numbers-mode)
+(global-display-line-numbers-mode t)
 (setq display-line-numbers-type 'relative)
+(dolist (mode '(term-mode-hook
+                shell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
