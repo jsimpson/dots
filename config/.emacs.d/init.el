@@ -23,6 +23,8 @@
                 shell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+(set-face-attribute 'default nil :font "Hack" :height 125)
+
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; load custom dracula pro theme
