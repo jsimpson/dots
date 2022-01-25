@@ -82,6 +82,11 @@
 
 (use-package general
   :config
+  (general-evil-setup t)
+  (general-create-definer jsi/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix ","
+    :global-prefix "C-,")
   (general-define-key
    "C-s" 'swiper
    "M-x" 'counsel-M-x)
