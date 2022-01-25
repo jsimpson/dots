@@ -83,10 +83,14 @@
 (use-package general
   :config
   (general-evil-setup t)
-  (general-create-definer jsi/leader-keys
+  (general-create-definer jsi/leader-key-def
     :keymaps '(normal insert visual emacs)
-    :prefix ","
-    :global-prefix "C-,")
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+  (jsi/leader-key-def
+    "t" '(:ignore t :which-key "toggles")
+    "tt" '(counsel-load-theme :which-key "choose theme")
+    "ts" '(hydra-text-scale/body :which-key "zoom"))
   (general-define-key
    "C-s" 'swiper
    "M-x" 'counsel-M-x)
@@ -126,13 +130,44 @@
 (use-package evil
   :init
   (setq evil-search-module 'evil-search)
-  (setq evil-ex-complete-emacs-commands nil)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (setq evil-shift-round nil)
-  (setq evil-want-C-u-scroll t)
+  ;(setq evil-ex-complete-emacs-commands nil)
+  ;(setq evil-vsplit-window-right t)
+  ;(setq evil-split-window-below t)
+  ;(setq evil-shift-round nil)
+  ;(setq evil-want-C-u-scroll t)
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
   :config
-  (evil-mode))
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  ; use visual line mode even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package hydra)
+(defhydra hydra-text-scale (:timeout 4)
+  "zoom"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("f" nil "finished" :exit t))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom (projectile-completion-system 'ivy)
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/projects")
+    (setq projectile-project-search-path '("~/projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
 
 ;; load paredit
 (use-package paredit)
@@ -147,13 +182,13 @@
   :hook
   (prog-mode . rainbow-delimiters-mode)
   :config
-  (set-face-foreground 'rainbow-delimiters-depth-1-face "#80ffea") ; cyan
-  (set-face-foreground 'rainbow-delimiters-depth-2-face "#8aff80") ; green
-  (set-face-foreground 'rainbow-delimiters-depth-3-face "#ffca80") ; orange
-  (set-face-foreground 'rainbow-delimiters-depth-4-face "#ff80bf") ; pink
-  (set-face-foreground 'rainbow-delimiters-depth-5-face "#9580ff") ; purple
-  (set-face-foreground 'rainbow-delimiters-depth-6-face "#ff9580") ; red
-  (set-face-foreground 'rainbow-delimiters-depth-7-face "#ffff80")) ; yellow)
+  (set-face-foreground 'rainbow-delimiters-depth-1-face "#80ffea")  ; cyan
+  (set-face-foreground 'rainbow-delimiters-depth-2-face "#8aff80")  ; green
+  (set-face-foreground 'rainbow-delimiters-depth-3-face "#ffca80")  ; orange
+  (set-face-foreground 'rainbow-delimiters-depth-4-face "#ff80bf")  ; pink
+  (set-face-foreground 'rainbow-delimiters-depth-5-face "#9580ff")  ; purple
+  (set-face-foreground 'rainbow-delimiters-depth-6-face "#ff9580")  ; red
+  (set-face-foreground 'rainbow-delimiters-depth-7-face "#ffff80")) ; yellow
 
 ;; load markdown mode
 (use-package markdown-mode
@@ -165,7 +200,8 @@
 
 ;; load magit
 (use-package magit
-  :init (setq magit-fetch-modules-jobs 16))
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 ;; load flycheck
 (use-package flycheck
@@ -193,3 +229,17 @@
   (server-start))
 
 ;;; .emacs.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(helm-minibuffer-history-key "M-p")
+ '(package-selected-packages
+   '(evil-magit hydra evil-collection doom-modeline powerline all-the-icons helpful ivy-rich yasnippet which-key use-package slime rainbow-delimiters paredit magit lsp-mode ido-vertical-mode helm-projectile go-projectile general flycheck evil dracula-theme counsel company avy)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
