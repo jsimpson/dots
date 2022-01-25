@@ -180,6 +180,13 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-key] . helpful-key))
 
+;; M-x all-the-icons-install-fonts must be run interactively on a new machine after installing the package.
+(use-package all-the-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom (doom-modeline-height 15))
+
 ;; start server
 (require 'server)
 (unless (server-running-p)
