@@ -27,9 +27,8 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-;; load custom dracula pro theme
+;; load custom dracula pro / doom dracula pro theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'dracula-pro t)
 
 ;; interactive mode everywhere
 ;(ido-mode 1)
@@ -79,6 +78,9 @@
   (package-install 'use-package))
 (require 'use-package)
 (setq use-package-always-ensure t)
+
+(use-package doom-themes
+  :init (load-theme 'doom-dracula-pro t))
 
 (use-package general
   :config
@@ -130,11 +132,6 @@
 (use-package evil
   :init
   (setq evil-search-module 'evil-search)
-  ;(setq evil-ex-complete-emacs-commands nil)
-  ;(setq evil-vsplit-window-right t)
-  ;(setq evil-split-window-below t)
-  ;(setq evil-shift-round nil)
-  ;(setq evil-want-C-u-scroll t)
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   :config
@@ -179,16 +176,7 @@
 
 ;; load rainbow delimiters
 (use-package rainbow-delimiters
-  :hook
-  (prog-mode . rainbow-delimiters-mode)
-  :config
-  (set-face-foreground 'rainbow-delimiters-depth-1-face "#80ffea")  ; cyan
-  (set-face-foreground 'rainbow-delimiters-depth-2-face "#8aff80")  ; green
-  (set-face-foreground 'rainbow-delimiters-depth-3-face "#ffca80")  ; orange
-  (set-face-foreground 'rainbow-delimiters-depth-4-face "#ff80bf")  ; pink
-  (set-face-foreground 'rainbow-delimiters-depth-5-face "#9580ff")  ; purple
-  (set-face-foreground 'rainbow-delimiters-depth-6-face "#ff9580")  ; red
-  (set-face-foreground 'rainbow-delimiters-depth-7-face "#ffff80")) ; yellow
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; load markdown mode
 (use-package markdown-mode
@@ -235,7 +223,7 @@
  ;; If there is more than one, they won't work right.
  '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
-   '(evil-magit hydra evil-collection doom-modeline powerline all-the-icons helpful ivy-rich yasnippet which-key use-package slime rainbow-delimiters paredit magit lsp-mode ido-vertical-mode helm-projectile go-projectile general flycheck evil dracula-theme counsel company avy)))
+   '(doom-themes evil-magit hydra evil-collection doom-modeline powerline all-the-icons helpful ivy-rich yasnippet which-key Use-package slime rainbow-delimiters paredit magit lsp-mode ido-vertical-mode helm-projectile go-projectile general flycheck evil dracula-theme counsel company avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
