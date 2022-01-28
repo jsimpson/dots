@@ -9,32 +9,24 @@
 (setq ispell-program-name "aspell")
 (setq ispell-extra-args '("--sug-mode=ultra"))
 
-;; Customize user interface.
+;; UI customization
 (menu-bar-mode 0)
 (when (display-graphic-p)
   (tool-bar-mode 0)
   (scroll-bar-mode 0))
-;(setq inhibit-startup-screen t)
 (column-number-mode 't)
 (global-visual-line-mode 1)
 (global-display-line-numbers-mode t)
 (setq display-line-numbers-type 'relative)
-(dolist (mode '(term-mode-hook
-                shell-mode-hook))
+(dolist (mode '(term-mode-hook shell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (set-face-attribute 'default nil :font "Hack" :height 125)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-;; load custom dracula pro / doom dracula pro theme
+;; load custom dracula pro / doom dracula pro themes
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-
-;; interactive mode everywhere
-;(ido-mode 1)
-;(ido-everywhere)
-;(setq ido-enable-flex-matching t)
-;(fido-mode)
 
 ;; show stray whitespace
 (setq-default show-trailing-whitespace t)
@@ -67,7 +59,9 @@
 
 ;; load package manager, add the MELP package repository
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '((("melpa" . "https://melpa.org/packages/") t)
+                                 (("org" . "http://orgmode.elpa") t)))
+
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -80,7 +74,12 @@
 (setq use-package-always-ensure t)
 
 (use-package doom-themes
-  :init (load-theme 'doom-dracula-pro t))
+  :init (load-theme 'doom-dracula-pro t)
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
 
 (use-package general
   :config
@@ -145,6 +144,8 @@
   :after evil
   :config
   (evil-collection-init))
+
+(use-package org)
 
 (use-package hydra)
 (defhydra hydra-text-scale (:timeout 4)
