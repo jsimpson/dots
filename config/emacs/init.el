@@ -162,7 +162,15 @@
   :config
   (evil-collection-init))
 
-(use-package org)
+(use-package org
+  :config
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  :custom
+  (org-agenda-files '("~/notes/work/tasks.org"
+                      "~/notes/personal/dates.org")))
+
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode)
@@ -245,8 +253,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(helm-minibuffer-history-key "M-p")
+ '(org-agenda-files '("~/notes/work/tasks.org" "~/notes/personal/dates.org") nil nil "Customized with use-package org")
  '(package-selected-packages
-   '(org-bullets doom-themes evil-magit hydra evil-collection doom-modeline powerline all-the-icons helpful ivy-rich yasnippet which-key Use-package slime rainbow-delimiters paredit magit lsp-mode ido-vertical-mode helm-projectile go-projectile general flycheck evil dracula-theme counsel company avy)))
+   '(go-mode org-bullets doom-themes evil-magit hydra evil-collection doom-modeline powerline all-the-icons helpful ivy-rich yasnippet which-key Use-package slime rainbow-delimiters paredit magit lsp-mode ido-vertical-mode helm-projectile go-projectile general flycheck evil dracula-theme counsel company avy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
