@@ -122,6 +122,18 @@
   :init
   (setq inferior-lisp-program "sbcl"))
 
+; language servers
+(use-package lsp-mode
+  :init (setq lsp-keymap-prefix "C-c l"))
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+; languages
+(use-package go-mode)
+(add-hook 'go-mode-hook #'lsp-deferred)
+(add-hook 'go-mode-hook (lambda ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t)))
+
 (use-package ivy
   :init (ivy-mode))
 (use-package swiper)
