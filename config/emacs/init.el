@@ -192,6 +192,9 @@
   :config
   (evil-collection-init))
 
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
 (use-package org
   :config
   (setq org-agenda-start-with-log-mode t)
