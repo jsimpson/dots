@@ -67,6 +67,9 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
+(dolist (mode '(treemacs-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
 ;; bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -154,6 +157,9 @@
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
+
+(use-package lsp-treemacs
+  :after lsp)
 
 (use-package company-box
   :hook (company-mode . company-box-mode))
