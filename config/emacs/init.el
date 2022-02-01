@@ -123,8 +123,18 @@
   (setq inferior-lisp-program "sbcl"))
 
 ; language servers
+(setq gc-cons-threshold 100000000) ; speed up initialization, reducing GC runs
+(setq read-process-output-max (* 1024 1024 3)) ; 3mb
 (use-package lsp-mode
-  :init (setq lsp-keymap-prefix "C-c l"))
+  :commands (lsp lsp-deferred)
+  :init (setq lsp-keymap-prefix "C-c l")
+  :config (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
 (add-hook 'go-mode-hook #'lsp-deferred)
 
 ; languages
