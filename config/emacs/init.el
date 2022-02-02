@@ -138,8 +138,6 @@
   :custom
   (lsp-ui-doc-position 'bottom))
 
-(add-hook 'go-mode-hook #'lsp-deferred)
-
 ; languages
 (use-package go-mode)
 (add-hook 'go-mode-hook #'lsp-deferred)
