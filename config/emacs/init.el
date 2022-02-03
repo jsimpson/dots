@@ -148,6 +148,9 @@
 (use-package csharp-mode)
 (add-hook 'csharp-mode-hook #'lsp-deferred)
 
+(use-package dotnet)
+(add-hook 'csharp-mode-hook 'dotnet-mode)
+
 (use-package csproj-mode)
 
 ; completions
