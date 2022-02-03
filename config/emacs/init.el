@@ -168,7 +168,19 @@
   :hook (company-mode . company-box-mode))
 
 ; treemacs / file navigation
-(use-package lsp-treemacs :after lsp)
+(use-package treemacs
+  :defer t
+  :bind
+  (:map global-map ([f8] . treemacs))
+  (:map global-map ("C-<f8>" . treemacs-select-window))
+  :config
+  (setq treemacs-is-never-other-window t))
+(use-package treemacs-evil
+  :after (treemacs evil))
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+(use-package lsp-treemacs
+  :after (treemacs lsp))
 
 (use-package ivy
   :init (ivy-mode))
@@ -229,8 +241,7 @@
   :custom (projectile-completion-system 'ivy)
   :bind-keymap ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/projects")
-    (setq projectile-project-search-path '("~/projects")))
+  (setq projectile-project-search-path '("~/notes/" "~/projects/" "~/work/"))
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
