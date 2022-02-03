@@ -48,7 +48,7 @@
 
 ;; write auto-saves and backups to separate directory
 (make-directory "~/.config/emacs/backup/" t)
-(setq auto-save-file-name-transforms '((".*" "~/config/emacs/backup/" t)))
+(setq auto-save-file-name-transforms '((".*" "~/.config/emacs/backup/" t)))
 (setq backup-directory-alist '(("." . "~/.config/emacs/backup/margo/")))
 
 ;; do not move the current file while creating backup
