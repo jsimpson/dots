@@ -228,6 +228,18 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
+(use-package ob-go)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((emacs-lisp . t)
+                             (C . t)
+                             (go . t)
+                             (python . t)
+                             (ruby . t)
+                             (shell . t)
+                             (sql . t)
+                             (sqlite . t)))
+
 (use-package hydra)
 (defhydra hydra-text-scale (:timeout 4)
   "zoom"
