@@ -288,6 +288,12 @@
 (use-package flycheck
   :init (global-flycheck-mode))
 
+;; load dockerfile-mode and docker.el
+(use-package dockerfile-mode)
+
+(use-package docker
+  :bind ("C-c d" . docker))
+
 ;; load helpful
 (use-package helpful
   :custom
