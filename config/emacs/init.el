@@ -145,14 +145,6 @@
   (add-hook 'before-save-hook #'lsp-format-buffer t t)
   (add-hook 'before-save-hook #'lsp-organize-imports t t)))
 
-(use-package csharp-mode)
-(add-hook 'csharp-mode-hook #'lsp-deferred)
-
-(use-package dotnet)
-(add-hook 'csharp-mode-hook 'dotnet-mode)
-
-(use-package csproj-mode)
-
 ; completions
 (use-package company
   :after (lsp-mode)
